@@ -58,9 +58,11 @@ stages:
       - checkout: none
       # Download template artefact from previous stage
       - download: current
+        displayName:  Download template
         artifact: template
       # Download function artefact from previous stage
       - download: current
+        displayName:  Download function
         artifact: function
       # Deploy ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
