@@ -12,7 +12,7 @@ namespace SearchFunction
     public static class RefreshIndex
     {
         private const string INDEX_NAME = "posts";
-        
+
         [FunctionName("refresh-search-index")]
         public async static Task Run(
             [TimerTrigger("0 0 0 * * FRI")]TimerInfo timer,
@@ -20,7 +20,7 @@ namespace SearchFunction
         {
             var searchAccount = Environment.GetEnvironmentVariable("search-account");
             var searchKey = Environment.GetEnvironmentVariable("search-key");
-            
+
             log.LogInformation($"Load at: {DateTime.Now}");
             log.LogInformation(
                 $"Search account status:  {!string.IsNullOrWhiteSpace(searchAccount)}");
@@ -32,10 +32,16 @@ namespace SearchFunction
                 new SearchCredentials(searchKey));
             var posts = await PostRegistry.LoadPostListAsync();
 
-            log.LogInformation($"Load {posts.Length} posts list");
+            log.LogInformation($"Loaded {posts.Length} posts list");
 
-            await RefreshIndexAsync(serviceClient);
-            await LoadDocumentsAsync(serviceClient.Indexes.GetClient(INDEX_NAME), posts);
+            log.LogInformation("Refreshing Index");
+            await RefreshIndexAsync(serviceClient, log);
+            log.LogInformation("Loading documents in Index");
+            await LoadDocumentsAsync(
+                serviceClient.Indexes.GetClient(INDEX_NAME),
+                posts,
+                log);
+            log.LogInformation("All done");
         }
 
         private static SearchServiceClient GetService(string searchKey)
@@ -45,12 +51,13 @@ namespace SearchFunction
             return serviceClient;
         }
 
-        private static async Task RefreshIndexAsync(SearchServiceClient serviceClient)
+        private static async Task RefreshIndexAsync(SearchServiceClient serviceClient, ILogger log)
         {
             var indexList = await serviceClient.Indexes.ListAsync();
             var deletingTasks = from i in indexList.Indexes
                                 select serviceClient.Indexes.DeleteAsync(i.Name);
 
+            log.LogInformation("Deleting indexes");
             await Task.WhenAll(deletingTasks);
 
             var definition = new Microsoft.Azure.Search.Models.Index()
@@ -59,14 +66,19 @@ namespace SearchFunction
                 Fields = FieldBuilder.BuildForType<Post>()
             };
 
+            log.LogInformation("Creating new index");
             await serviceClient.Indexes.CreateAsync(definition);
         }
 
-        private static async Task LoadDocumentsAsync(ISearchIndexClient indexClient, Post[] posts)
+        private static async Task LoadDocumentsAsync(
+            ISearchIndexClient indexClient,
+            Post[] posts,
+            ILogger log)
         {
             var actions = from p in posts
                           select IndexAction.Upload(p);
             var batch = IndexBatch.New(actions);
+            log.LogInformation("Uploading documents to index");
             var result = await indexClient.Documents.IndexAsync(batch);
         }
     }
