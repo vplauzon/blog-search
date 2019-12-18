@@ -134,37 +134,6 @@
                 }
             },
             "resources": [
-                {
-                    "type": "functions",
-                    "apiVersion": "2019-08-01",
-                    "name": "refresh-search-index",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
-                    ],
-                    "properties": {
-                        "config": {
-                            "bindings": [
-                                {
-                                    "authLevel": "function",
-                                    "name": "req",
-                                    "type": "httpTrigger",
-                                    "direction": "in",
-                                    "methods": [
-                                        "get"
-                                    ]
-                                },
-                                {
-                                    "name": "res",
-                                    "type": "http",
-                                    "direction": "out"
-                                }
-                            ]
-                        },
-                        "files": {
-                        },
-                        "isDisabled": false
-                    }
-                }
             ]
         }
     ],
