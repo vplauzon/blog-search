@@ -136,7 +136,7 @@
                         },
                         {
                             "name": "search-key",
-                            "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', parameters('searchServiceName')),'2015-08-19').keys[0].value]"
+                            "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', parameters('searchServiceName')),'2015-08-19').PrimaryKey]"
                         }
                     ]
                 }
