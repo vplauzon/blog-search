@@ -20,11 +20,6 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      # Copy source to "template" folder
-      - bash:  |
-          mkdir template
-          cp template/*.json template
-        displayName:  Copy artefacts
       # Publish "template" artefact
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: template'
