@@ -11,8 +11,8 @@
         "appInsightsName": {
             "value": "blog-insights"
         },
-        "vpl-blog-search-function-app": {
-            "value": "blog-insights"
+        "functionAppName": {
+            "value": "vpl-blog-search-function-app"
         }
     }
 }
