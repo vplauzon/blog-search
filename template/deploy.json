@@ -129,6 +129,14 @@
                         {
                             "name": "WEBSITE_TIME_ZONE",
                             "value": "[variables('Function App Timezone')]"
+                        },
+                        {
+                            "name": "search-account",
+                            "value": "[parameters('searchServiceName')]"
+                        },
+                        {
+                            "name": "search-key",
+                            "value": "[listKeys(resourceId('Microsoft.Search/searchServices', parameters('searchServiceName')),'2015-08-19').keys[0].value]"
                         }
                     ]
                 }
