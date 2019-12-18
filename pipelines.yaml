@@ -20,17 +20,17 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      # Copy source to "content" folder
+      # Copy source to "template" folder
       - bash:  |
-          mkdir content
-          cp *.json content
+          mkdir template
+          cp template/*.json content
         displayName:  Copy artefacts
-      # Publish "content" artefact
+      # Publish "template" artefact
       - task: PublishBuildArtifacts@1
-        displayName: 'Publish Artifact: content'
+        displayName: 'Publish Artifact: template'
         inputs:
-          PathtoPublish: content
-          ArtifactName: content
+          PathtoPublish: template
+          ArtifactName: template
   - stage:  release
     dependsOn:  build
     variables:  []
@@ -46,9 +46,8 @@ stages:
       # Don't checkout repo
       - checkout: none
       # Download artefact from previous stage
-      - download: current
-        artifact: content
-      - bash:  ls -l $(Pipeline.Workspace)/content
+      - download: template
+        artifact: template
       # Deploy ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - deploy.json
@@ -57,7 +56,7 @@ stages:
           resourceGroupName: $(rg)
           location: '$(location)'
           templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/content/deploy.json
-          csmParametersFile: $(Pipeline.Workspace)/content/deploy.prod.parameters.json
+          csmFile: $(Pipeline.Workspace)/template/deploy.json
+          csmParametersFile: $(Pipeline.Workspace)/template/deploy.prod.parameters.json
           overrideParameters: ''
         timeoutInMinutes: 3
