@@ -15,34 +15,42 @@ namespace SearchFunction
 
         [FunctionName("refresh-search-index")]
         public async static Task Run(
-            [TimerTrigger("*/5 * * * * *")]TimerInfo timer,
-            //[TimerTrigger("0 0 0 * * FRI")]TimerInfo timer,
+            [TimerTrigger("0 0 0 * * FRI")]TimerInfo timer,
             ILogger log)
         {
-            var searchAccount = Environment.GetEnvironmentVariable("search-account");
-            var searchKey = Environment.GetEnvironmentVariable("search-key");
+            try
+            {
+                var searchAccount = Environment.GetEnvironmentVariable("search-account");
+                var searchKey = Environment.GetEnvironmentVariable("search-key");
 
-            log.LogInformation($"Load at: {DateTime.Now}");
-            log.LogInformation(
-                $"Search account status:  {!string.IsNullOrWhiteSpace(searchAccount)}");
-            log.LogInformation(
-                $"Search key status:  {!string.IsNullOrWhiteSpace(searchKey)}");
+                log.LogInformation($"Load at: {DateTime.Now}");
+                log.LogInformation(
+                    $"Search account status:  {!string.IsNullOrWhiteSpace(searchAccount)}");
+                log.LogInformation(
+                    $"Search key status:  {!string.IsNullOrWhiteSpace(searchKey)}");
 
-            var serviceClient = new SearchServiceClient(
-                searchAccount,
-                new SearchCredentials(searchKey));
-            var posts = await PostRegistry.LoadPostListAsync();
+                var serviceClient = new SearchServiceClient(
+                    searchAccount,
+                    new SearchCredentials(searchKey));
+                var posts = await PostRegistry.LoadPostListAsync();
 
-            log.LogInformation($"Loaded {posts.Length} posts list");
+                log.LogInformation($"Loaded {posts.Length} posts list");
 
-            log.LogInformation("Refreshing Index");
-            await RefreshIndexAsync(serviceClient, log);
-            log.LogInformation("Loading documents in Index");
-            await LoadDocumentsAsync(
-                serviceClient.Indexes.GetClient(INDEX_NAME),
-                posts,
-                log);
-            log.LogInformation("All done");
+                log.LogInformation("Refreshing Index");
+                await RefreshIndexAsync(serviceClient, log);
+                log.LogInformation("Loading documents in Index");
+                await LoadDocumentsAsync(
+                    serviceClient.Indexes.GetClient(INDEX_NAME),
+                    posts,
+                    log);
+                log.LogInformation("All done");
+            }
+            catch(Exception ex)
+            {
+                log.LogError($"Exception:  {ex.Message}");
+                log.LogError($"Inner Exception:  {ex.InnerException?.Message}");
+                log.LogError($"Exception type:  {ex.GetType().FullName}");
+            }
         }
 
         private static SearchServiceClient GetService(string searchKey)
