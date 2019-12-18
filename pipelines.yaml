@@ -56,9 +56,12 @@ stages:
       steps:
       # Don't checkout repo
       - checkout: none
-      # Download artefact from previous stage
+      # Download template artefact from previous stage
       - download: current
         artifact: template
+      # Download function artefact from previous stage
+      - download: current
+        artifact: function
       # Deploy ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - deploy.json
