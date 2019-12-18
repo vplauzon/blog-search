@@ -23,7 +23,7 @@ stages:
       # Copy source to "template" folder
       - bash:  |
           mkdir template
-          cp template/*.json content
+          cp template/*.json template
         displayName:  Copy artefacts
       # Publish "template" artefact
       - task: PublishBuildArtifacts@1
