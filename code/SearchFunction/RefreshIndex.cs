@@ -15,7 +15,8 @@ namespace SearchFunction
 
         [FunctionName("refresh-search-index")]
         public async static Task Run(
-            [TimerTrigger("0 0 0 * * FRI")]TimerInfo timer,
+            [TimerTrigger("*/5 * * * * *")]TimerInfo timer,
+            //[TimerTrigger("0 0 0 * * FRI")]TimerInfo timer,
             ILogger log)
         {
             var searchAccount = Environment.GetEnvironmentVariable("search-account");
@@ -60,11 +61,16 @@ namespace SearchFunction
             log.LogInformation($"Deleting {indexListResult.Indexes.Count} indexes");
             await Task.WhenAll(deletingTasks);
 
+            log.LogInformation("Preparing fields");
+
+            var fields = FieldBuilder.BuildForType<Post>();
+
             log.LogInformation("Preparing new index");
+
             var definition = new Microsoft.Azure.Search.Models.Index()
             {
                 Name = INDEX_NAME,
-                Fields = FieldBuilder.BuildForType<Post>()
+                Fields = fields
             };
 
             log.LogInformation("Creating new index");
