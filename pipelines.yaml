@@ -20,6 +20,21 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
+      # Publish the function project
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish'
+        inputs:
+          command: publish
+          publishWebProjects: false
+          projects: '**/*.csproj'
+          arguments: '-o testpath'
+          zipAfterPublish: true
+          modifyOutputPath: true
+      - task: PublishBuildArtifacts@1
+        displayName: pub
+        inputs:
+          PathtoPublish: .
+          ArtifactName: all
       # Publish "template" artefact
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: template'
