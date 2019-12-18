@@ -1,0 +1,63 @@
+# Help:  https://aka.ms/yaml
+
+resources:
+- repo: self
+
+variables:  []
+
+trigger:
+- master
+
+stages:
+  - stage:  build
+    dependsOn:  []
+    variables:  []
+    jobs:
+    - job:  main
+      dependsOn:  []
+      variables:  []
+      continueOnError:  false
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+      # Copy source to "content" folder
+      - bash:  |
+          mkdir content
+          cp *.json content
+        displayName:  Copy artefacts
+      # Publish "content" artefact
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: content'
+        inputs:
+          PathtoPublish: content
+          ArtifactName: content
+  - stage:  release
+    dependsOn:  build
+    variables:  []
+    jobs:
+    - job:  main
+      dependsOn:  []
+      variables:
+        location: northcentralus
+        rg: blog
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+      # Don't checkout repo
+      - checkout: none
+      # Download artefact from previous stage
+      - download: current
+        artifact: content
+      - bash:  ls -l $(Pipeline.Workspace)/content
+      # Deploy ARM template from artefact files
+      - task: AzureResourceGroupDeployment@2
+        displayName: Azure Deployment - deploy.json
+        inputs:
+          azureSubscription: devops-deploy
+          resourceGroupName: $(rg)
+          location: '$(location)'
+          templateLocation:  Linked artifact
+          csmFile: $(Pipeline.Workspace)/content/deploy.json
+          csmParametersFile: $(Pipeline.Workspace)/content/deploy.prod.parameters.json
+          overrideParameters: ''
+        timeoutInMinutes: 3

@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "searchServiceName": {
+            "metadata": {
+                "description": "Name of the search service"
+            },
+            "type": "string"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-08-19",
+            "type": "Microsoft.Search/searchServices",
+            "name": "[parameters('searchServiceName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "free"
+            },
+            "properties": {
+                "replicaCount": 1,
+                "partitionCount": 1,
+                "hostingMode": "Default"
+            }
+        }
+    ],
+    "outputs": {}
+}
