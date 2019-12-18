@@ -53,11 +53,11 @@ namespace SearchFunction
 
         private static async Task RefreshIndexAsync(SearchServiceClient serviceClient, ILogger log)
         {
-            var indexList = await serviceClient.Indexes.ListAsync();
-            var deletingTasks = from i in indexList.Indexes
+            var indexListResult = await serviceClient.Indexes.ListAsync();
+            var deletingTasks = from i in indexListResult.Indexes
                                 select serviceClient.Indexes.DeleteAsync(i.Name);
 
-            log.LogInformation("Deleting indexes");
+            log.LogInformation($"Deleting {indexListResult.Indexes.Count} indexes");
             await Task.WhenAll(deletingTasks);
 
             log.LogInformation("Preparing new index");
