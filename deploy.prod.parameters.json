@@ -4,6 +4,15 @@
     "parameters": {
         "searchServiceName": {
             "value": "vpl-blog-search"
+        },
+        "storageAccountName": {
+            "value": "vplblogsearchfunction"
+        },
+        "appInsightsName": {
+            "value": "blog-insights"
+        },
+        "vpl-blog-search-function-app": {
+            "value": "blog-insights"
         }
     }
 }
