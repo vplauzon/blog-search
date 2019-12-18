@@ -60,6 +60,7 @@ namespace SearchFunction
             log.LogInformation("Deleting indexes");
             await Task.WhenAll(deletingTasks);
 
+            log.LogInformation("Preparing new index");
             var definition = new Microsoft.Azure.Search.Models.Index()
             {
                 Name = INDEX_NAME,
