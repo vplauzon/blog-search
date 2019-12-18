@@ -25,7 +25,6 @@ stages:
         inputs:
           command: 'restore'
           projects: '**/*.csproj'
-          feedsToUse: 'config'
       # Publish the function project
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'
