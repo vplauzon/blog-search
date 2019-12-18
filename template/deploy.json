@@ -67,7 +67,7 @@
         },
         {
             "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2018-02-01",
+            "apiVersion": "2019-08-01",
             "name": "[parameters('appPlanName')]",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -77,7 +77,8 @@
             "properties": {
                 "name": "[parameters('appPlanName')]",
                 "computeMode": "Dynamic"
-            }
+            },
+            "kind": "linux"
         },
         {
             "apiVersion": "2019-08-01",

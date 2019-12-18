@@ -27,14 +27,15 @@ stages:
           command: publish
           publishWebProjects: false
           projects: '**/*.csproj'
-          arguments: '-o testpath'
+          arguments: '-o function'
           zipAfterPublish: true
           modifyOutputPath: true
+      # Publish "template" artefact
       - task: PublishBuildArtifacts@1
-        displayName: pub
+        displayName: "Publish artifact:  function"
         inputs:
-          PathtoPublish: .
-          ArtifactName: all
+          PathtoPublish: function
+          ArtifactName: function
       # Publish "template" artefact
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: template'
@@ -70,3 +71,11 @@ stages:
           csmParametersFile: $(Pipeline.Workspace)/template/deploy.prod.parameters.json
           overrideParameters: ''
         timeoutInMinutes: 3
+      # Deploy function app
+      - task: AzureFunctionApp@1
+        inputs:
+          azureSubscription: 'devops-deploy'
+          appName: 'vpl-blog-search-function-app'
+          appType: 'functionAppLinux'
+          package: $(Pipeline.Workspace)/function/**/*.zip
+          runtimeStack: 'DOCKER|microsoft/azure-functions-dotnet-core2.0:2.0'
