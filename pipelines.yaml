@@ -22,6 +22,7 @@ stages:
       steps:
       # Force restore on pacakges
       - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
         inputs:
           command: 'restore'
           projects: '**/*.csproj'
