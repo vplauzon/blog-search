@@ -30,50 +30,82 @@ stages:
           arguments: '-o function'
           zipAfterPublish: true
           modifyOutputPath: true
-      # Publish "template" artefact
+      # Publish "function" artefact
       - task: PublishBuildArtifacts@1
         displayName: "Publish artifact:  function"
         inputs:
           PathtoPublish: function
           ArtifactName: function
-      # Publish "template" artefact
+      # Publish "deploy-scripts" artefact
       - task: PublishBuildArtifacts@1
-        displayName: 'Publish Artifact: template'
+        displayName: 'Publish Artifact: deploy-scripts'
         inputs:
-          PathtoPublish: template
-          ArtifactName: template
+          PathtoPublish: deploy-scripts
+          ArtifactName: deploy-scripts
   - stage:  release
     dependsOn:  build
-    variables:  []
+    variables:
+      location: northcentralus
+      rg: blog
+      deploy-storage-name: vplblogdeploy
+      deploy-container-name: artefacts
+      folder:  $(System.TeamProject)/$(Release.DefinitionName)/$(Release.ReleaseName)/$(Release.EnvironmentName)/$(Release.AttemptNumber)
     jobs:
     - job:  main
       dependsOn:  []
-      variables:
-        location: northcentralus
-        rg: blog
+      variables: []
       pool:
         vmImage: ubuntu-latest
       steps:
       # Don't checkout repo
       - checkout: none
-      # Download template artefact from previous stage
+      # Download deploy-scripts artefact from previous stage
       - download: current
-        displayName:  Download template
-        artifact: template
+        displayName:  Download deploy-scripts
+        artifact: deploy-scripts
       # Download function artefact from previous stage
       - download: current
         displayName:  Download function
         artifact: function
-      # Deploy ARM template from artefact files
+      # Create deployment storage
       - task: AzureResourceGroupDeployment@2
-        displayName: Azure Deployment - deploy.json
+        displayName: Deployment - storage.json
         inputs:
           azureSubscription: devops-deploy
           resourceGroupName: $(rg)
-          location: '$(location)'
+          location: $(location)
           templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/template/deploy.json
-          csmParametersFile: $(Pipeline.Workspace)/template/deploy.prod.parameters.json
+          csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/storage.json
+          csmParametersFile:  ''
+          overrideParameters: -storageAccountName $(deploy-storage-name) -containerName $(deploy-container-name)
+        timeoutInMinutes: 3
+      # Copy files to storage
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: 'devops-deploy'
+          scriptType: 'bash'
+          scriptLocation: scriptPath
+          scriptPath: $(Pipeline.Workspace)/deploy-scripts/create-sas-token.sh
+          arguments: $(deploy-storage-name)
+      # Create storage SAS Token
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: 'devops-deploy'
+          workingDirectory:  $(Pipeline.Workspace)/deploy-scripts
+          scriptType: 'bash'
+          scriptLocation: scriptPath
+          scriptPath: $(Pipeline.Workspace)/deploy-scripts/create-sas-token.sh
+          arguments: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)$(sas)
+      # Deploy ARM template from artefact files
+      - task: AzureResourceGroupDeployment@2
+        displayName: Deployment - deploy.json
+        inputs:
+          azureSubscription: devops-deploy
+          resourceGroupName: $(rg)
+          location: $(location)
+          templateLocation:  Linked artifact
+          csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/deploy.json
+          csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/templates/deploy.prod.parameters.json
           overrideParameters: ''
         timeoutInMinutes: 3
       # Deploy function app
