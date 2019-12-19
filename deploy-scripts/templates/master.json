@@ -127,7 +127,7 @@
                     "apimId": {
                         "value": "[reference(variables('Apim Service Deployment'), '2019-05-01').outputs.apimId.value]"
                     },
-                    "searchServiceKey": {
+                    "searchKey": {
                         "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceKey.value]"
                     }
                 }
