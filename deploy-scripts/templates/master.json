@@ -122,13 +122,10 @@
                 },
                 "parameters": {
                     "apimName": {
-                        "value": "dsffds"
-                    },
-                    "apimId": {
-                        "value": "asfd"
+                        "value": "[parameters('apimName')]"
                     },
                     "searchKey": {
-                        "value": "asdasdf"
+                        "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceKey.value]"
                     }
                 }
             }

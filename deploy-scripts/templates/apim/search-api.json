@@ -9,13 +9,6 @@
                 "description": "API-M's Name"
             }
         },
-        "apimId": {
-            "type": "string",
-            "minLength": 2,
-            "metadata": {
-                "description": "API-M's resource ID"
-            }
-        },
         "searchKey": {
             "type": "string",
             "minLength": 2,
@@ -32,7 +25,6 @@
             "apiVersion": "2019-01-01",
             "name": "[concat(parameters('apimName'), '/search')]",
             "dependsOn": [
-                "[parameters('apimId')]"
             ],
             "properties": {
                 "displayName": "search",
@@ -115,7 +107,6 @@
             "apiVersion": "2019-01-01",
             "name": "[concat(parameters('apimName'), '/api-search-search-query-key')]",
             "dependsOn": [
-                "[parameters('apimId')]"
             ],
             "properties": {
                 "displayName": "api-search-search-query-key",
