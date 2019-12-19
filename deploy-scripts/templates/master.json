@@ -110,6 +110,32 @@
         {
             "apiVersion": "2019-05-01",
             "type": "Microsoft.Resources/deployments",
+            "name": "[variables('Api Search Deployment')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('Apim Service Deployment'))]",
+                "[resourceId('Microsoft.Resources/deployments', variables('Search Deployment'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('releaseFolderUrl'), '/templates/apim/search-api.json?', parameters('sasToken'))]"
+                },
+                "parameters": {
+                    "apimName": {
+                        "value": "[parameters('apimName')]"
+                    },
+                    "apimId": {
+                        "value": "[reference(variables('Apim Service Deployment'), '2019-05-01').outputs.apimId.value]"
+                    },
+                    "searchKey": {
+                        "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceKey.value]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
             "name": "[variables('Function Deployment')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('Search Deployment'))]"
