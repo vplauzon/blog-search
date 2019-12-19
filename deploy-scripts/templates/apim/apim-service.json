@@ -30,7 +30,7 @@
                 },
                 "certificates": [
                 ],
-                "enableClientCertificate": true,
+                "enableClientCertificate": false,
                 "publisherEmail": "nobody@vplauzon.com",
                 "publisherName": "api-admin"
             },
