@@ -25,7 +25,7 @@
     },
     "variables": {
         "Search Service Property": "api-search-service-name",
-        "Query Key Property": "api-search-service-name",
+        "Query Key Property": "api-search-query-key",
         "Product": "search-product",
         "Api": "search-api",
         "Web Subscription": "search-web"
