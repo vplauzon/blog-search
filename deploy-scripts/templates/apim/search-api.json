@@ -27,7 +27,8 @@
         "Search Service Property": "api-search-service-name",
         "Query Key Property": "api-search-service-name",
         "Product": "search-product",
-        "Api": "search-api"
+        "Api": "search-api",
+        "Web Subscription": "search-web"
     },
     "resources": [
         {
@@ -165,6 +166,19 @@
                     }
                 }
             ]
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/subscriptions",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apimName'), '/', variables('Web Subscription'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimName'), variables('Product'))]"
+            ],
+            "properties": {
+                "displayName": "[variables('Web Subscription')]",
+                "scope": "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimName'), variables('Product'))]",
+                "allowTracing": false
+            }
         }
     ],
     "outputs": {
