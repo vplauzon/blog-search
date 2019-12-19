@@ -79,23 +79,26 @@ stages:
           csmParametersFile:  ''
           overrideParameters: -storageAccountName $(deploy-storage-name) -containerName $(deploy-container-name)
         timeoutInMinutes: 3
-      # Copy files to storage
-      - task: AzureCLI@2
-        inputs:
-          azureSubscription: 'devops-deploy'
-          scriptType: 'bash'
-          scriptLocation: scriptPath
-          scriptPath: $(Pipeline.Workspace)/deploy-scripts/create-sas-token.sh
-          arguments: $(deploy-storage-name)
       # Create storage SAS Token
       - task: AzureCLI@2
+        displayName: Create SAS Token
         inputs:
           azureSubscription: 'devops-deploy'
           workingDirectory:  $(Pipeline.Workspace)/deploy-scripts
           scriptType: 'bash'
           scriptLocation: scriptPath
           scriptPath: $(Pipeline.Workspace)/deploy-scripts/create-sas-token.sh
-          arguments: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)$(sas)
+          arguments: $(deploy-storage-name)
+      # Copy files to storage
+      - task: AzureCLI@2
+        displayName: Copy files to storage
+        inputs:
+          azureSubscription: 'devops-deploy'
+          workingDirectory:  $(Pipeline.Workspace)/deploy-scripts
+          scriptType: 'bash'
+          scriptLocation: scriptPath
+          scriptPath: $(Pipeline.Workspace)/deploy-scripts/copy-artefacts.sh
+          arguments: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)?$(sas)
       # Deploy ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
         displayName: Deployment - deploy.json
