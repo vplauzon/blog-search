@@ -53,8 +53,8 @@ stages:
     - job:  main
       dependsOn:  []
       variables:
-        folder:  $(System.TeamProject)/$(System.StageName)/$(System.StageAttempt)
-        deployment-uid:  $(System.TeamProject)-$(System.StageName)-$(System.StageAttempt)
+        folder:  $(System.TeamProject)/$(System.StageName)/$(Build.BuildId)/$(System.StageAttempt)
+        deployment-uid:  $(System.TeamProject)-$(System.StageName)-$(Build.BuildId)-$(System.StageAttempt)
       pool:
         vmImage: ubuntu-latest
       steps:
