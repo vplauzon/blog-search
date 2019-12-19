@@ -5,7 +5,7 @@
         "searchServiceName": {
             "value": "vpl-blog-search"
         },
-        "storageAccountName": {
+        "functionStorageAccountName": {
             "value": "vplblogsearchfunction"
         },
         "appInsightsName": {
