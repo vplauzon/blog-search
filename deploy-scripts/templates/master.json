@@ -53,13 +53,40 @@
             },
             "defaultValue": "search-app-plan",
             "type": "string"
+        },
+        "apimName": {
+            "type": "string",
+            "minLength": 2,
+            "metadata": {
+                "description": "API-M's Name"
+            }
         }
     },
     "variables": {
+        "Apim Service Deployment": "[concat('apim-service-', parameters('deploymentUid'))]",
         "Search Deployment": "[concat('search-', parameters('deploymentUid'))]",
         "Function Deployment": "[concat('function-', parameters('deploymentUid'))]"
     },
     "resources": [
+        {
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('Apim Service Deployment')]",
+            "dependsOn": [
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('releaseFolderUrl'), '/templates/apim/apim-service.json?', parameters('sasToken'))]"
+                },
+                "parameters": {
+                    "apimName": {
+                        "value": "[parameters('apimName')]"
+                    }
+
+                }
+            }
+        },
         {
             "apiVersion": "2019-05-01",
             "type": "Microsoft.Resources/deployments",

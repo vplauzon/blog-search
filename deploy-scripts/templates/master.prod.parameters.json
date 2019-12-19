@@ -13,6 +13,9 @@
         },
         "functionAppName": {
             "value": "vpl-blog-search-function-app"
+        },
+        "apimName": {
+            "value": "vpl-blog-apim"
         }
     }
 }
