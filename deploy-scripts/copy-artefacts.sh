@@ -21,6 +21,6 @@ echo
 echo "Copy files..."
 
 az storage copy \
-    -s templates/* \
+    -s templates \
     -d $releaseFolderUrl \
     --recursive
