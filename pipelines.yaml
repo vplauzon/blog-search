@@ -49,12 +49,12 @@ stages:
       rg: blog
       deploy-storage-name: vplblogdeploy
       deploy-container-name: artefacts
+      folder:  $(System.TeamProject)/$(Build.BuildId)/$(System.StageName)/$(System.StageAttempt)
+      deployment-uid:  $(System.TeamProject)-$(Build.BuildId)-$(System.StageName)-$(System.StageAttempt)
     jobs:
     - job:  main
       dependsOn:  []
-      variables:
-        folder:  $(System.TeamProject)/$(Build.BuildId)/$(System.StageName)/$(System.StageAttempt)
-        deployment-uid:  $(System.TeamProject)-$(Build.BuildId)-$(System.StageName)-$(System.StageAttempt)
+      variables:  []
       pool:
         vmImage: ubuntu-latest
       steps:
