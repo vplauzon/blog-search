@@ -1,0 +1,119 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deploymentUid": {
+            "type": "string",
+            "minLength": 5,
+            "metadata": {
+                "description": "Deployment's unique ID"
+            }
+        },
+        "releaseFolderUrl": {
+            "type": "string",
+            "minLength": 5,
+            "metadata": {
+                "description": "Release folder URL (in storage account)"
+            }
+        },
+        "sasToken": {
+            "type": "string",
+            "minLength": 5,
+            "metadata": {
+                "description": "Container's SAS token"
+            }
+        },
+        "searchServiceName": {
+            "metadata": {
+                "description": "Name of the search service"
+            },
+            "type": "string"
+        },
+        "functionStorageAccountName": {
+            "metadata": {
+                "description": "Name of the storage account used by Azure function"
+            },
+            "type": "string"
+        },
+        "appInsightsName": {
+            "metadata": {
+                "description": "Name of the app insights pre-deployed in the same resource group"
+            },
+            "type": "string"
+        },
+        "functionAppName": {
+            "metadata": {
+                "description": "..."
+            },
+            "type": "string"
+        },
+        "appPlanName": {
+            "metadata": {
+                "description": "..."
+            },
+            "defaultValue": "search-app-plan",
+            "type": "string"
+        }
+    },
+    "variables": {
+        "Search Deployment": "[concat('search-', parameters('deploymentUid'))]",
+        "Function Deployment": "[concat('function-', parameters('deploymentUid'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('Search Deployment')]",
+            "dependsOn": [
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('releaseFolderUrl'), '/search.json?', parameters('sasToken'))]"
+                },
+                "parameters": {
+                    "searchServiceName": {
+                        "value": "[parameters('searchServiceName')]"
+                    }
+
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('Function Deployment')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', variables('Search Deployment'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('releaseFolderUrl'), '/function.json?', parameters('sasToken'))]"
+                },
+                "parameters": {
+                    "searchServiceId": {
+                        "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceId.value]"
+                    },
+                    "searchServiceKey": {
+                        "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceKey.value]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('functionStorageAccountName')]"
+                    },
+                    "appInsightsInstrumentationKey": {
+                        "value": "[reference(resourceId('microsoft.insights/components/', parameters('appInsightsName')), '2015-05-01').InstrumentationKey]"
+                    },
+                    "functionAppName": {
+                        "value": "[parameters('functionAppName')]"
+                    },
+                    "appPlanName": {
+                        "value": "[parameters('appPlanName')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

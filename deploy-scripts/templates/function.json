@@ -2,9 +2,15 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "searchServiceName": {
+        "searchServiceId": {
             "metadata": {
-                "description": "Name of the search service"
+                "description": "Id of the search service"
+            },
+            "type": "string"
+        },
+        "searchServiceKey": {
+            "metadata": {
+                "description": "Query key of the search service"
             },
             "type": "string"
         },
@@ -14,9 +20,9 @@
             },
             "type": "string"
         },
-        "appInsightsName": {
+        "appInsightsInstrumentationKey": {
             "metadata": {
-                "description": "Name of the app insights pre-deployed in the same resource group"
+                "description": "Instrumentation key from app insights"
             },
             "type": "string"
         },
@@ -38,20 +44,6 @@
         "Function App Timezone": "Canada Central Standard Time"
     },
     "resources": [
-        {
-            "apiVersion": "2015-08-19",
-            "type": "Microsoft.Search/searchServices",
-            "name": "[parameters('searchServiceName')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "free"
-            },
-            "properties": {
-                "replicaCount": 1,
-                "partitionCount": 1,
-                "hostingMode": "Default"
-            }
-        },
         {
             "apiVersion": "2019-04-01",
             "type": "Microsoft.Storage/storageAccounts",
@@ -120,7 +112,7 @@
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[reference(resourceId('microsoft.insights/components/', parameters('appInsightsName')), '2015-05-01').InstrumentationKey]"
+                            "value": "[parameters('appInsightsInstrumentationKey')]"
                         },
                         {
                             "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
@@ -132,11 +124,11 @@
                         },
                         {
                             "name": "search-account",
-                            "value": "[parameters('searchServiceName')]"
+                            "value": "[parameters('searchServiceId')]"
                         },
                         {
                             "name": "search-key",
-                            "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', parameters('searchServiceName')),'2015-08-19').PrimaryKey]"
+                            "value": "[listAdminKeys(parameters('searchServiceId'), '2015-08-19').PrimaryKey]"
                         }
                     ]
                 }

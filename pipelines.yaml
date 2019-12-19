@@ -50,6 +50,7 @@ stages:
       deploy-storage-name: vplblogdeploy
       deploy-container-name: artefacts
       folder:  $(System.TeamProject)/$(Release.DefinitionName)/$(Release.ReleaseName)/$(Release.EnvironmentName)/$(Release.AttemptNumber)
+      deployment-uid:  $(Release.DefinitionName)-$(Release.ReleaseName)-$(Release.EnvironmentName)-$(Release.AttemptNumber)
     jobs:
     - job:  main
       dependsOn:  []
@@ -79,6 +80,16 @@ stages:
           csmParametersFile:  ''
           overrideParameters: -storageAccountName $(deploy-storage-name) -containerName $(deploy-container-name)
         timeoutInMinutes: 3
+      # Copy files to storage
+      - task: AzureCLI@2
+        displayName: Copy files to storage
+        inputs:
+          azureSubscription: 'devops-deploy'
+          workingDirectory:  $(Pipeline.Workspace)/deploy-scripts
+          scriptType: 'bash'
+          scriptLocation: scriptPath
+          scriptPath: $(Pipeline.Workspace)/deploy-scripts/copy-artefacts.sh
+          arguments: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)
       # Create storage SAS Token
       - task: AzureCLI@2
         displayName: Create SAS Token
@@ -89,27 +100,17 @@ stages:
           scriptLocation: scriptPath
           scriptPath: $(Pipeline.Workspace)/deploy-scripts/create-sas-token.sh
           arguments: $(deploy-storage-name)
-      # Copy files to storage
-      - task: AzureCLI@2
-        displayName: Copy files to storage
-        inputs:
-          azureSubscription: 'devops-deploy'
-          workingDirectory:  $(Pipeline.Workspace)/deploy-scripts
-          scriptType: 'bash'
-          scriptLocation: scriptPath
-          scriptPath: $(Pipeline.Workspace)/deploy-scripts/copy-artefacts.sh
-          arguments: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)?$(sas)
       # Deploy ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
-        displayName: Deployment - deploy.json
+        displayName: Deployment - master.json
         inputs:
           azureSubscription: devops-deploy
           resourceGroupName: $(rg)
           location: $(location)
           templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/deploy.json
-          csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/templates/deploy.prod.parameters.json
-          overrideParameters: ''
+          csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/master.json
+          csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/templates/master.prod.parameters.json
+          overrideParameters: -deploymentUid $(deployment-uid) -sasToken $(sas) -releaseFolderUrl https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)
         timeoutInMinutes: 3
       # Deploy function app
       - task: AzureFunctionApp@1
