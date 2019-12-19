@@ -111,7 +111,7 @@ stages:
           csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/master.json
           csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/templates/master.prod.parameters.json
           overrideParameters: -deploymentUid $(deployment-uid) -sasToken $(sas) -releaseFolderUrl https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)
-        timeoutInMinutes: 3
+        timeoutInMinutes: 5
       # Deploy function app
       - task: AzureFunctionApp@1
         inputs:
