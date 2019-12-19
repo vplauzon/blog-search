@@ -124,6 +124,9 @@
                     "apimName": {
                         "value": "[parameters('apimName')]"
                     },
+                    "searchServiceName": {
+                        "value": "[parameters('searchServiceName')]"
+                    },
                     "searchKey": {
                         "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceKey.value]"
                     }
