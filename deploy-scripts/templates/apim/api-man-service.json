@@ -45,9 +45,9 @@
         }
     ],
     "outputs": {
-        "searchServiceId": {
+        "apimId": {
             "type": "string",
-            "value": "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+            "value": "[resourceId(parameters('apimName'), '2019-01-01')]"
         }
     }
 }
