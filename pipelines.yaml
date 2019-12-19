@@ -54,7 +54,7 @@ stages:
     jobs:
     - job:  main
       dependsOn:  []
-      variables:
+      variables: []
       pool:
         vmImage: ubuntu-latest
       steps:
