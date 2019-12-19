@@ -146,8 +146,8 @@
                     "uri": "[concat(parameters('releaseFolderUrl'), '/templates/function.json?', parameters('sasToken'))]"
                 },
                 "parameters": {
-                    "searchServiceId": {
-                        "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceId.value]"
+                    "searchServiceName": {
+                        "value": "[parameters('searchServiceName')]"
                     },
                     "searchServiceKey": {
                         "value": "[reference(variables('Search Deployment'), '2019-05-01').outputs.searchServiceKey.value]"
