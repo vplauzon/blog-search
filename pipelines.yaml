@@ -20,12 +20,6 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      # Force restore on pacakges
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore'
-        inputs:
-          command: 'restore'
-          projects: '**/*.csproj'
       # Publish the function project
       - task: DotNetCoreCLI@2
         displayName: 'dotnet publish'

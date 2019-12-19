@@ -34,15 +34,14 @@ namespace SearchFunction
                     new SearchCredentials(searchKey));
                 var posts = await PostRegistry.LoadPostListAsync();
 
-                log.LogInformation($"Loaded {posts.Length} posts list");
+                log.LogInformation($"{posts.Length} posts in blog");
 
                 log.LogInformation("Refreshing Index");
-                await RefreshIndexAsync(serviceClient, log);
+                await RefreshIndexAsync(serviceClient);
                 log.LogInformation("Loading documents in Index");
                 await LoadDocumentsAsync(
                     serviceClient.Indexes.GetClient(INDEX_NAME),
-                    posts,
-                    log);
+                    posts);
                 log.LogInformation("All done");
             }
             catch(Exception ex)
@@ -60,40 +59,30 @@ namespace SearchFunction
             return serviceClient;
         }
 
-        private static async Task RefreshIndexAsync(SearchServiceClient serviceClient, ILogger log)
+        private static async Task RefreshIndexAsync(SearchServiceClient serviceClient)
         {
             var indexListResult = await serviceClient.Indexes.ListAsync();
             var deletingTasks = from i in indexListResult.Indexes
                                 select serviceClient.Indexes.DeleteAsync(i.Name);
 
-            log.LogInformation($"Deleting {indexListResult.Indexes.Count} indexes");
             await Task.WhenAll(deletingTasks);
-
-            log.LogInformation("Preparing fields");
-
-            var fields = FieldBuilder.BuildForType<Post>();
-
-            log.LogInformation("Preparing new index");
 
             var definition = new Microsoft.Azure.Search.Models.Index()
             {
                 Name = INDEX_NAME,
-                Fields = fields
+                Fields = FieldBuilder.BuildForType<Post>()
             };
 
-            log.LogInformation("Creating new index");
             await serviceClient.Indexes.CreateAsync(definition);
         }
 
         private static async Task LoadDocumentsAsync(
             ISearchIndexClient indexClient,
-            Post[] posts,
-            ILogger log)
+            Post[] posts)
         {
             var actions = from p in posts
                           select IndexAction.Upload(p);
             var batch = IndexBatch.New(actions);
-            log.LogInformation("Uploading documents to index");
             var result = await indexClient.Documents.IndexAsync(batch);
         }
     }
