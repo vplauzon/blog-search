@@ -76,7 +76,7 @@
                     "apiVersion": "2019-01-01",
                     "name": "policy",
                     "dependsOn": [
-                        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimName'), 'search')]"
+                        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimName'), variables('Api'))]"
                     ],
                     "properties": {
                         "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <cors allow-credentials=\"true\">\r\n      <allowed-origins>\r\n        <origin>https://vplauzon.github.io/</origin>\r\n      </allowed-origins>\r\n      <allowed-methods preflight-result-max-age=\"300\">\r\n        <method>GET</method>\r\n        <method>OPTIONS</method>\r\n      </allowed-methods>\r\n      <allowed-headers>\r\n        <header>*</header>\r\n      </allowed-headers>\r\n      <expose-headers>\r\n        <header>*</header>\r\n      </expose-headers>\r\n    </cors>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
