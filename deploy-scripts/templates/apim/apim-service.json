@@ -48,14 +48,6 @@
         "q": {
             "type": "object",
             "value": "[reference(parameters('apimName'))]"
-        },
-        "publicIp": {
-            "type": "string",
-            "value": "[reference(parameters('apimName')).publicIPAddresses[0]]"
-        },
-        "apiIdentity": {
-            "type": "object",
-            "value": "[reference(parameters('apimName'), '2019-01-01', 'Full').identity]"
         }
     }
 }
