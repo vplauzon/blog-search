@@ -47,7 +47,7 @@ stages:
     variables:
       location: northcentralus
       rg: blog
-      deploy-storage-name: vplblogdeploy
+      deploy-storage-name: vplblogsearchdeploy
       deploy-container-name: artefacts
       folder:  $(System.TeamProject)/$(Build.BuildId)/$(System.StageName)/$(System.StageAttempt)
       deployment-uid:  $(System.TeamProject)-$(Build.BuildId)-$(System.StageName)-$(System.StageAttempt)
