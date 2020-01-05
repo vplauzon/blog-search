@@ -47,10 +47,10 @@ stages:
     variables:
       location: northcentralus
       rg: blog
-      deploy-storage-name: vplblogsearchdeploy
+      deploy-storage-name: vplblogdeploy
       deploy-container-name: artefacts
-      folder:  $(System.TeamProject)/$(Build.BuildId)/$(System.StageName)/$(System.StageAttempt)
-      deployment-uid:  $(System.TeamProject)-$(Build.BuildId)-$(System.StageName)-$(System.StageAttempt)
+      folder:  $(System.TeamProject)/$(Build.DefinitionName)/$(Build.BuildId)/$(System.StageName)/$(System.StageAttempt)
+      deployment-uid:  $(System.TeamProject)-$(Build.DefinitionName)-$(Build.BuildId)-$(System.StageName)-$(System.StageAttempt)
     jobs:
     - job:  main
       dependsOn:  []
@@ -68,18 +68,6 @@ stages:
       - download: current
         displayName:  Download function
         artifact: function
-      # Create deployment storage
-      - task: AzureResourceGroupDeployment@2
-        displayName: Deployment - storage.json
-        inputs:
-          azureSubscription: devops-deploy
-          resourceGroupName: $(rg)
-          location: $(location)
-          templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/storage.json
-          csmParametersFile:  ''
-          overrideParameters: -storageAccountName $(deploy-storage-name) -containerName $(deploy-container-name)
-        timeoutInMinutes: 3
       # Copy files to storage
       - task: AzureCLI@2
         displayName: Copy files to storage
