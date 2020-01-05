@@ -51,7 +51,7 @@
             "metadata": {
                 "description": "..."
             },
-            "defaultValue": "search-app-plan",
+            "defaultValue": "blog-app-plan",
             "type": "string"
         },
         "apimName": {
