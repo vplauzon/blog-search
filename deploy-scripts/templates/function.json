@@ -36,7 +36,7 @@
             "metadata": {
                 "description": "..."
             },
-            "defaultValue": "search-app-plan",
+            "defaultValue": "blog-app-plan",
             "type": "string"
         }
     },
@@ -58,28 +58,12 @@
             }
         },
         {
-            "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2019-08-01",
-            "name": "[parameters('appPlanName')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Y1",
-                "tier": "Dynamic"
-            },
-            "properties": {
-                "name": "[parameters('appPlanName')]",
-                "computeMode": "Dynamic"
-            },
-            "kind": "linux"
-        },
-        {
             "apiVersion": "2019-08-01",
             "type": "Microsoft.Web/sites",
             "name": "[parameters('functionAppName')]",
             "location": "[resourceGroup().location]",
             "kind": "functionapp",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('appPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
             ],
             "properties": {
