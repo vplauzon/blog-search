@@ -41,7 +41,7 @@
         }
     },
     "variables": {
-        "Function App Timezone": "Canada Central Standard Time"
+        "Function App Timezone": "Eastern Standard Time"
     },
     "resources": [
         {
